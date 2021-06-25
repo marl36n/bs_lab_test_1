@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: laravel-app-1
+  namespace: gw
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: laravel-app-1-http
+      protocol: HTTP
+    hosts:
+    - kworker

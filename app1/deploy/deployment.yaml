@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel1
+  namespace: default
+  labels:
+    app: laravel1
+    version: latest
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: laravel1
+      version: latest
+
+  template:
+    metadata:
+      labels:
+        app: laravel1
+        version: latest
+
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: kworker
+      containers:
+      - name: app
+        image: marlin1993/bs_laravel_1
+        imagePullPolicy: IfNotPresent # IfNotPresent # Always
+
+        ports:
+        - containerPort: 8181
+        #command: ["tail", "-f", "/dev/null"]
+
+
+        env:
+        - name: ENV_FILE_PATH
+          value: "/env"
+        - name: APP_DEPLOYMENT_COUNTER
+          value: "1"
+
+
+

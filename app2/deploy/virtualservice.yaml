@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: laravel-app-2
+  namespace: gw
+spec:
+  hosts:
+  - "kworker"
+  gateways:
+  - laravel-app-2
+  http:
+  - match:
+    - uri:
+        prefix: /app2
+    route:
+    - destination:
+        host: laravel2.default.svc.cluster.local
+        port:
+          number: 80
