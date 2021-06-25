@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages{
+
+        stage(Build Docker Image){
+            steps{
+                sh "docker build . -t laravel-app-1 -f ./build/Dockerfile"
+
+            }
+
+        }
+
+        stage(Deploy to kubernetes server){
+            steps{
+                sshagent([$kmaster"]){            //install a plugin in jenkins ssh agent create a global credentials with a kubernetes cluster & replace the 
+                                                  //$kmaster variable with the crentials tag that you saved in jenkins
+
+                    sh "scp -o StrictHostKeyChecking=no ./deploy/ root@kmaster:/home/kmaster/"
+                    script{
+                        try{
+                            sh "ssh root@kmaster kubectl apply -f ."
+                        }
+                        catch(error){
+                            sh "ssh root@kmaster kubectl create -f ."
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+
+
+}
