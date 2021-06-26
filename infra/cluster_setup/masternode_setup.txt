@@ -1,0 +1,61 @@
+I used to create a kubernetes cluster with this setup.
+
+kubernetes setup steps:
+Step 1: Prepare Hostname, Firewall, and SELinux
+# hostnamectl set-hostname master-node
+# cat <<EOF>> /etc/hosts
+192.168.2.2 master-node
+192.168.2.3 node-1 worker-node-1
+192.168.2.4 node-2 worker-node-2
+EOF
+  
+# setenforce 0
+# sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+# reboot
+# swapoff -a
+  
+#sytemctl stop firewalld  
+# modprobe br_netfilter
+# echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+Step 2: Install Docker-CE on CentOS 7
+# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+# dnf install https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
+# dnf install docker-ce
+# systemctl enable docker
+# systemctl start docker
+  
+Step 3: Install Kubernetes (Kubeadm) on CentOS 7
+# cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+  
+# dnf install kubeadm -y 
+# systemctl enable kubelet
+# systemctl start kubelet
+  
+Step 4: Create a control-plane Master with kubeadm
+# kubeadm init
+================================================
+**kubeadm init commnad will print a join commnad which will be user forjoining you worker nodes,keep the below commnad save for furthur use
+
+# kubeadm join 192.168.0.47:6443 --token nu06lu.xrsux0ss0ixtnms5 –discovery token-ca-cert-hash sha256:f996ea35r4353d342fdea2997a1cf8caeddafd6d4360d606dbc82314683478hjmf7  
+=================================================
+
+To use root, run:
+$ mkdir -p $HOME/.kube
+$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Step 5: Setup Your Pod Network
+
+# export kubever=$(kubectl version | base64 | tr -d '\n')
+#kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+

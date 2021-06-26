@@ -1,0 +1,7 @@
+Follow the steps of masternode_setup.txt file from step 1-3 forall worker nodes
+
+And then run below commnads
+
+# kubeadm join 192.168.0.47:6443 --token nu06lu.xrsux0ss0ixtnms5 –discovery token-ca-cert-hash sha256:f996ea35r4353d342fdea2997a1cf8caeddafd6d4360d606dbc82314683478hjmf7
+
+** this is a join commnad this will produce diffent in your environment when you set up the master node.Apply that join commnad
